@@ -1,1 +1,1 @@
-This Directory contains script to provision servers asCode and setup applications via Ansible.
+This Directory contains scripts to provision servers asCode and setup applications via Ansible.
