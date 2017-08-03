@@ -1,4 +1,0 @@
-- apache a besoin de l'@ip du jboss pour mettre a jour le fichier workers.properties
-- a priori jboss peut mettre a jour le routage (parametre instance-id="{worker_name}" avec un nom generique : exemple app1worker.
-- reste a passer en mode cluster pour apache et jboss et mettre un loadbalancer devant
-- reste a integrer une base de donnees : oracle ?
