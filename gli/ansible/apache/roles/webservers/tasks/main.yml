@@ -1,0 +1,37 @@
+---
+# This task installs and enables apache on webservers
+
+- name: ensure apache is installed
+  yum: pkg=httpd state=latest
+
+- name: copy files to document root
+  copy: src=cloud.png dest=/var/www/html/cloud.png
+
+- name: copy application code to document root
+  template: src=index.html.j2 dest=/var/www/html/index.html
+  notify: restart apache
+
+- name: copy mod_jk.so library to  modules directory
+  copy: src=mod_jk.so dest=/etc/httpd/modules/mod_jk.so mode=0755
+  notify: restart apache
+
+- name: copy mod_jk.conf library to  conf.d directory
+  template: src=mod_jk.conf.j2 dest=/etc/httpd/conf.d/mod_jk.conf mode=0644
+  notify: restart apache
+
+- name: Creates directory for mod_jk
+  file:
+    path: /var/run/mod_jk
+    state: directory
+    owner: apache
+    group: apache
+    mode: 0775
+    recurse: yes
+
+- name: copy workers.properties to  conf directory
+  template: src=workers.properties.j2 dest=/etc/httpd/conf/workers.properties mode=0644
+  notify: restart apache
+
+- name: ensure apache is running
+  service: name=httpd state=started enabled=yes
+

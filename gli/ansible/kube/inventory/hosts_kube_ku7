@@ -1,0 +1,7 @@
+[masters]
+"172.31.10.66"
+[etcd:children]
+masters
+[nodes]
+"172.31.6.53"
+"172.31.14.190"

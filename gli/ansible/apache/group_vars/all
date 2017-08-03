@@ -1,0 +1,11 @@
+# Here are variables related to the standalone JBoss installation
+
+# Here are variables related to the standalone JBoss installation
+
+# worker 1 information for workers.properties template file
+appWorker_name_1: app1Worker
+appWorker_ip_1: 172.31.0.172
+
+# worker 2 information for workers.properties template file
+appWorker_name_2: app2Worker
+appWorker_ip_2: 172.31.0.172

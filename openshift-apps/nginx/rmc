@@ -1,0 +1,4 @@
+for i in ` docker ps -a | awk '{ print $1 }' | egrep -iv container`
+do
+docker rm $i
+done

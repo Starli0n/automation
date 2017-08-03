@@ -1,0 +1,26 @@
+#!/bin/bash
+# by stef@dev2ops.eu
+# June 2017
+# create the infra as code in AWS for a new Jboss server(s)
+# 
+
+if [ "$#" -ne 2 ]; then
+ echo "Usage: $0 project_name nb_jboss_server(s)"
+ exit 1
+fi
+
+project_name=$1
+nb_jboss_servers=$2
+
+wd=~/devel/gli/aws/ec2/ansible
+
+
+echo -n "creating Jboss server(s) for project : $project_name ... "
+
+# test if cluster exists, if yes we do nothing
+
+# instance creation
+ansible-playbook -e project_name=$project_name -e nb_jboss_servers=$nb_jboss_servers $wd/playbooks/jboss_create_servers.yaml
+
+
+echo "done"

@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# by stef@dev2ops.eu
+# June 2017
+# setup the Openshift cluster on all nodes : master(s) and node(s)
+#
+# param1 : cluster_name
+
+if [ "$#" -ne 1 ]; then
+ echo "Usage: $0 cluster_name"
+ exit 1
+fi
+
+cluster_name=$1
+
+adminCentos="adminCentos"
+wd=$DEVOPS_AWS
+ansible=$DEVOPS_ANSIBLE
+log_date=`$wd/utils/getFormatDate.sh`
+log_file=$openshift_cluster_name"_log_"$log_date
+host_file=$ansible/openshift/inventory/byo/hosts_osev3_$cluster_name
+ssh_file=$ansible/openshift/inventory/byo/hosts_osev3_ssh_$cluster_name
+
+# wait the cluster until up and running
+$wd/utils/waitCluster.sh openshift $cluster_name
+
+# unlock root to exec ansible
+# the file with instance private IP is the dedicated directory
+echo -n "unlocking ssh on nodes ..."
+$wd/utils/unlockRoot_openshift.sh $cluster_name > $DEVOPS_LOGS/$log_file
+echo " done"
+
+# install ansible package on each instance
+
+# exec openshift ansible playbook to setup kubernetes on all nodes
+echo -n "preparing inventory file for ansible ..."
+	scp $host_file $adminCentos:/root/tmp/openshift-ansible/inventory/byo
+	echo "cat /root/tmp/openshift-ansible/inventory/byo/hosts.template /root/tmp/openshift-ansible/inventory/byo/hosts_osev3_$cluster_name > /root/tmp/openshift-ansible/inventory/byo/hosts" > /tmp/prepareHostInventory.sh
+	scp /tmp/prepareHostInventory.sh $adminCentos:/root/tmp/tmp
+	ssh $adminCentos 'chmod 750 /root/tmp/tmp/prepareHostInventory.sh'
+	ssh $adminCentos '/root/tmp/tmp/prepareHostInventory.sh'
+echo " done"
+
+echo "playing ansible playbooks (this could take a while!) ..."
+	ssh $adminCentos 'ansible-playbook /root/tmp/openshift-ansible/playbooks/byo/config.yml -i /root/tmp/openshift-ansible/inventory/byo/hosts '
+echo " done"
+
+

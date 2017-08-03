@@ -1,0 +1,23 @@
+---
+- name: Create Apache server(s) infra on Amazon EC2
+  vars:
+    start_idx: 1
+  hosts: localhost
+  tasks:
+    - name: create all server(s) EC2 instance(s)
+      ec2:
+        image: ami-236c7445
+        region: eu-west-1
+        instance_type: t2.micro
+        key_name: devops
+        group: [sg_apache]
+        vpc_subnet_id: subnet-893e9bd1
+        instance_tags:
+          Name: "apache_{{ project_name }}_{{ item }}"
+          app_name: apache
+          env: dev
+          project_name: "{{ project_name }}"
+          server_role: webserver
+      with_sequence: start={{ start_idx }} count={{ nb_apache_servers }} format=web%02x
+      register: ec2_apache
+

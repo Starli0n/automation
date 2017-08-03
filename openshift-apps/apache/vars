@@ -1,0 +1,14 @@
+# Here are variables related to the standalone JBoss installation
+
+# Here are variables related to the standalone JBoss installation
+
+# worker for app helloworld 
+app_1=helloworld
+app_svc_1=app.devops.svc
+
+# worker for app ticket-monster
+app_2=ticket-monster
+app_svc_2=ticket-monster.devops.svc
+
+# for test
+ansible_eth0=1.2.3.4

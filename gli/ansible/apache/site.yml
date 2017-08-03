@@ -1,0 +1,7 @@
+---
+- name: apache server setup
+  remote_user: ec2-user
+  sudo: yes
+  hosts: webservers
+  roles:
+     - webservers

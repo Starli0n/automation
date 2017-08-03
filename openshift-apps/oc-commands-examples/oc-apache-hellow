@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# create the build for this Docker Image
+#
+# please login as devops with : oc login -u devops
+#
+oc new-build https://github.com/scampagna/openshift-apps.git --context-dir='apache-hellow' --strategy=docker --to='devops/apache-hellow:latest' --name='devops-apache-hellow'
+
+oc new-app apache-hellow:latest -o yaml --name='my-apache-hellow' --namespace=devops > /tmp/dobe-apache-hellow.yml
+oc create -f /tmp/dobe-apache-hellow.yml
+
+oc expose service/my-apache-hellow --hostname=54.194.240.173

@@ -1,0 +1,40 @@
+---
+- name: Create an openshift cluster infra on Amazon EC2
+  hosts: localhost
+  tasks:
+    - name: create all master(s) EC2 instance(s)
+      ec2:
+        image: ami-236c7445
+        region: eu-west-1
+        instance_type: t2.micro
+        key_name: devops
+        group: [sg_openshift]
+        vpc_subnet_id: subnet-893e9bd1
+        instance_tags:
+          Name: "{{ cluster_name }}_{{ item }}"
+          app_name: openshift
+          env: dev
+          cluster_name: "{{ cluster_name }}"
+          server_role: master
+          project_name: devops
+      with_sequence: start=1 end={{ nb_masters }} format=master%02x
+      register: ec2_masters
+
+    - name: create all node(s) EC2 instance(s)
+      ec2:
+        image: ami-236c7445
+        region: eu-west-1
+        instance_type: t2.micro
+        key_name: devops
+        group: [sg_openshift]
+        vpc_subnet_id: subnet-893e9bd1
+        instance_tags:
+          Name: "{{ cluster_name }}_{{ item }}"
+          app_name: openshift
+          env: dev
+          cluster_name: "{{ cluster_name }}"
+          server_role: node
+          project_name: devops
+      with_sequence: start=1 end={{ nb_nodes }} format=node%02x
+      register: ec2_nodes
+

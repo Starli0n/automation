@@ -1,0 +1,55 @@
+#!/bin/bash
+# by stef@dev2ops.eu
+# June 2017
+# create the infra as code in AWS for a new Openshift cluster
+# 
+
+if [ "$#" -ne 3 ]; then
+ echo "Usage: $0 cluster_name nb_master(s) nb_node(s)"
+ exit 1
+fi
+
+cluster_name=$1
+nbMasters=$2
+nbNodes=$3
+
+wd=$DEVOPS_AWS
+ansible=$DEVOPS_ANSIBLE
+host_file=$ansible/openshift/inventory/byo/hosts_osev3_$cluster_name
+ssh_file=$ansible/openshift/inventory/byo/hosts_osev3_ssh_$cluster_name
+
+
+echo -n "creating the Openshift Origin cluster : $cluster_name ... "
+
+# test if cluster exists, if yes we do nothing
+exist=`$wd/utils/existCluster.sh openshift $cluster_name`
+if [ "$exist" == "yes" ]
+then
+	echo "sorry this cluster already exists !!!"
+	exit 0
+fi
+
+
+if [ -f $ssh_file ]
+then
+	rm $ssh_file
+fi
+echo "[masters]" > $host_file
+
+for i in `$wd/sub/create_osev3_masters.sh $cluster_name $nbMasters`
+do
+	echo $i >> $host_file
+	echo $i >> $ssh_file
+done
+
+echo "[etcd:children]" >> $host_file
+echo "masters" >> $host_file
+
+echo "[nodes]" >> $host_file
+for i in `$wd/sub/create_osev3_nodes.sh $cluster_name $nbNodes`
+do
+	echo $i >> $host_file
+	echo $i >> $ssh_file
+done
+
+echo "done"

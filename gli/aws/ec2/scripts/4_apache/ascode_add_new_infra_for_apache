@@ -1,0 +1,30 @@
+#!/bin/bash
+# by stef@dev2ops.eu
+# June 2017
+# add a new server as code in AWS for a pool of Apache server(s)
+# 
+
+if [ "$#" -ne 2 ]; then
+ echo "Usage: $0 project_name nb_apache_server(s)"
+ exit 1
+fi
+
+project_name=$1
+nb_apache_servers=$2
+
+wd=~/devel/gli/aws/ec2/ansible
+utils_wd=~/devel/gli/aws/ec2/scripts/4_apache
+
+
+echo -n "adding Apache server(s) for project : $project_name ... "
+
+# test if cluster exists, if yes we do nothing
+
+# get the next index for Apacher server name
+idx=`$utils_wd/getNextIndex.py $project_name`
+
+# instance creation
+ansible-playbook -e start_idx=$idx -e project_name=$project_name -e nb_apache_servers=$nb_apache_servers $wd/playbooks/apache_create_servers.yaml
+
+
+echo "done"

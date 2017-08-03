@@ -1,0 +1,7 @@
+assetConfig:
+  ...
+  extensionScripts:
+    - scripts/catalog-categories.js
+  extensionStylesheets:
+    - css/logo-template.css
+  extensionDevelopment: true

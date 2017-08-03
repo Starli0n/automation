@@ -1,0 +1,14 @@
+---
+- name: stop/start all JBoss servers on Amazon EC2
+  hosts: localhost
+  tasks:
+    - name: stop/start all EC2 instance(s) with dedicated project_name
+      local_action:
+        module: ec2
+        state: "{{ expected_state }}"
+        region: eu-west-1
+        vpc_subnet_id: subnet-893e9bd1
+        source_dest_check: no
+        instance_tags:
+          app_name: jboss
+          project_name: "{{ project_name }}"

@@ -1,0 +1,32 @@
+#!/bin/bash
+# by stef@dev2ops.eu
+# June 2017
+# setup the infra as code in AWS for JBoss server(s) 
+# 
+
+if [ "$#" -ne 1 ]; then
+ echo "Usage: $0 project_name"
+ exit 1
+fi
+
+project_name=$1
+
+wd=~/devel/gli/aws/ec2/scripts/4_jboss
+inventory_dir=~/devel/gli/ansible/jboss
+playbook_dir=~/devel/gli/ansible/jboss
+
+
+echo -n "setup all JBoss server(s) for project : $project_name ... "
+
+# test if cluster exists, if yes we do nothing
+#
+# prepare the host file for the playbook
+# we concatenate a template with the dynamic generated hosts
+$wd/generateInventoy_jboss.py $project_name > $inventory_dir/hosts
+
+# setup the cluster via playbook
+cd $playbook_dir
+ansible-playbook ./site.yml -i ./hosts
+
+
+echo "done"

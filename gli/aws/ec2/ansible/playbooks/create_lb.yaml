@@ -1,0 +1,45 @@
+---
+- name: Create LB feature  
+  hosts: localhost
+  tasks:
+    - name: create a new LoadBalancer
+      ec2_elb_lb:
+        state: present
+        name: lb{{ project_name }} 
+        security_group_names: 'load-balancer-apache'
+        region: eu-west-1
+        subnets: 'subnet-893e9bd1,subnet-4372c524'
+        purge_subnets: yes
+        purge_listeners: yes
+        purge_instance_ids: yes
+        wait: yes
+        listeners:
+          - protocol: http
+            load_balancer_port: 80
+            instance_port: 80
+        tags:
+          Name: "lb{{ project_name }}"
+          app_name: loadbalancer
+          env: dev
+          project_name: "{{ project_name }}"
+          server_role: loadbalancer
+      register: ec2_lb
+
+    - action:
+        module: ec2_remote_facts
+        region: eu-west-1
+        filters:
+          instance-state-name: running
+          "tag:app_name": apache
+          "tag:project_name": "{{ project_name }}"
+          "tag:server_role": webserver
+      register: tagged_instances
+
+    - action:
+        module: ec2_elb
+        region: eu-west-1
+        instance_id: "{{ item }}" 
+        ec2_elbs: "lb{{ project_name }}"
+        state: present
+        wait: yes
+      with_items: "{{ tagged_instances.instances | map(attribute='id') | list }}" 

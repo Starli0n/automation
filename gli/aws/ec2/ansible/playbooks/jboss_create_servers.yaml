@@ -1,0 +1,21 @@
+---
+- name: Create JBoss server(s) infra on Amazon EC2
+  hosts: localhost
+  tasks:
+    - name: create all server(s) EC2 instance(s)
+      ec2:
+        image: ami-236c7445
+        region: eu-west-1
+        instance_type: t2.micro
+        key_name: devops
+        group: [sg_jboss]
+        vpc_subnet_id: subnet-893e9bd1
+        instance_tags:
+          Name: "jboss_{{ project_name }}_{{ item }}"
+          app_name: jboss
+          env: dev
+          project_name: "{{ project_name }}"
+          server_role: jbossserver
+      with_sequence: start=1 end={{ nb_jboss_servers }} format=jbo%02x
+      register: ec2_jboss
+

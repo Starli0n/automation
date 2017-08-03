@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# by stef@dev2ops.eu
+# June 2017
+# setup the Openshift cluster on all nodes : master(s) and node(s)
+#
+# param1 : cluster_name
+
+if [ "$#" -ne 1 ]; then
+ echo "Usage: $0 cluster_name"
+ exit 1
+fi
+
+cluster_name=$1
+
+adminCentos="adminAzure"
+wd=$DEVOPS_AZ
+ansible=$DEVOPS_ANSIBLE
+log_date=`$wd/utils/getFormatDate.sh`
+log_file=$openshift_cluster_name"_log_"$log_date
+host_file=$ansible/openshift/inventory/byo/hosts_osev3_$cluster_name
+ssh_file=$ansible/openshift/inventory/byo/hosts_osev3_ssh_$cluster_name
+
+# generate inventory and ssh files
+
+echo -n "generate inventory and ssh files ..."
+$wd/utils/createInventory.sh $cluster_name > $host_file
+cat $host_file | egrep -v "\[" | egrep -v "masters" > $ssh_file
+echo " done"
+
+
+# wait the cluster until up and running
+#$wd/utils/waitCluster.sh openshift $cluster_name
+
+# copy the ssh and inventory files to admin on Azure
+echo -n "copying inventory file ..."
+scp $host_file $adminCentos:/root/tmp/openshift-ansible/inventory/byo
+echo " done"
+echo -n "copying ssh file ..."
+scp $ssh_file $adminCentos:/root/tmp/openshift-ansible/inventory/byo
+echo " done"
+
+# unlock root to exec ansible
+# we must copy the script to the admin on Azure while @ip are private
+#
+echo -n "unlocking ssh on nodes ..."
+scp $wd/utils/unlockRoot_openshift_azure.sh root@$adminCentos:/root/tmp/
+ssh $adminCentos 'chmod 750 /root/tmp/*'
+ssh $adminCentos /root/tmp/unlockRoot_openshift_azure.sh $cluster_name
+
+echo " done"
+
+
+# install ansible package on each instance
+
+# exec openshift ansible playbook to setup kubernetes on all nodes
+echo -n "preparing inventory file for ansible ..."
+	echo "cat /root/tmp/openshift-ansible/inventory/byo/hosts.template /root/tmp/openshift-ansible/inventory/byo/hosts_osev3_$cluster_name > /root/tmp/openshift-ansible/inventory/byo/hosts" > /tmp/prepareHostInventory.sh
+	scp /tmp/prepareHostInventory.sh $adminCentos:/root/tmp
+	ssh $adminCentos 'chmod 750 /root/tmp/prepareHostInventory.sh'
+	ssh $adminCentos '/root/tmp/prepareHostInventory.sh'
+echo " done"
+
+echo "playing ansible playbooks (this could take a while!) ..."
+	ssh $adminCentos 'ansible-playbook /root/tmp/openshift-ansible/playbooks/byo/config.yml -i /root/tmp/openshift-ansible/inventory/byo/hosts '
+echo " done"
+
+

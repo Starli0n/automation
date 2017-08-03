@@ -1,0 +1,27 @@
+#!/bin/bash
+# by stef@dev2ops.eu
+# June 2017
+# create the infra as code in AWS for a new Openshift cluster
+# 
+
+if [ "$#" -ne 3 ]; then
+ echo "Usage: $0 cluster_name nb_master(s) nb_node(s)"
+ exit 1
+fi
+
+cluster_name=$1
+nb_masters=$2
+nb_nodes=$3
+
+wd=~/devel/gli/aws/ec2/ansible
+
+
+echo -n "creating the Openshift Origin cluster : $cluster_name ... "
+
+# test if cluster exists, if yes we do nothing
+
+# instance creation
+ansible-playbook -e cluster_name=$cluster_name -e nb_masters=$nb_masters -e nb_nodes=$nb_nodes $wd/playbooks/openshift_create_cluster.yaml
+
+
+echo "done"

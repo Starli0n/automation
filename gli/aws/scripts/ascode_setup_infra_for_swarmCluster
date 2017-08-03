@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# by stef@dev2ops.eu
+# June 2017
+# setup the docker swarm on all nodes : manager(s) and worker(s)
+#
+# param1 : cluster_name
+
+if [ "$#" -ne 1 ]; then
+ echo "Usage: $0 cluster_name"
+ exit 1
+fi
+
+cluster_name=$1
+
+wd=$DEVOPS_AWS
+ansible=$DEVOPS_ANSIBLE
+log_date=`$wd/utils/getFormatDate.sh`
+log_file=$cluster_name"_log_"$log_date
+
+# unlock root to exec ansible
+$wd/utils/unlockRoot.sh $cluster_name > $DEVOPS_LOGS/$log_file
+
+# exec swarm ansible playbook to setup swarm on all nodes
+ansible-playbook $ansible/swarm.yml -i $ansible/inventories/hosts_swarm_$cluster_name >> $DEVOPS_LOGS/$log_file
+
+# get the first manager in the host list for query
+manager=`cat $ansible/inventories/hosts_swarm_$cluster_name | grep -A 1 manager | egrep -v manager | awk -F "\"" '{print $2}'`
+
+# display the nodes of the swarm cluster
+ssh $manager 'docker node list' | tee -a $DEVOPS_LOGS/$log_file
+

@@ -1,0 +1,32 @@
+#!/bin/bash
+# by stef@dev2ops.eu
+# June 2017
+# setup the infra as code in AWS for a new Openshift cluster
+# 
+
+if [ "$#" -ne 1 ]; then
+ echo "Usage: $0 cluster_name"
+ exit 1
+fi
+
+cluster_name=$1
+
+wd=~/devel/gli/aws/ec2/scripts/4_openshift
+inventory_dir=~/devel/gli/ansible/openshift-ansible/inventory/byo
+playbook_dir=~/devel/gli/ansible/openshift-ansible/playbooks/byo
+
+
+echo -n "setup the Openshift Origin cluster : $cluster_name ... "
+
+# test if cluster exists, if yes we do nothing
+#
+# prepare the host file for the playbook
+# we concatenate a template with the dynamic generated hosts
+cp $inventory_dir/hosts.template $inventory_dir/hosts
+$wd/generateInventoy_openshift.py $cluster_name >> $inventory_dir/hosts
+
+# setup the cluster via playbook
+ansible-playbook $playbook_dir/config.yml -i $inventory_dir/hosts
+
+
+echo "done"

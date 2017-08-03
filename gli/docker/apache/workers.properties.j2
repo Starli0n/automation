@@ -1,0 +1,27 @@
+workers.apache_log=/var/log/httpd
+
+# Define list of workers that will be used
+# for mapping requests
+worker.list=loadbalancer
+
+# Define Node1
+worker.{{ appWorker_name_1 }}.port=8009
+worker.{{ appWorker_name_1 }}.type=ajp13
+worker.{{ appWorker_name_1 }}.ping_mode=A
+worker.{{ appWorker_name_1 }}.host={{ appWorker_ip_1 }} 
+worker.{{ appWorker_name_1 }}.lbfactor=1
+worker.{{ appWorker_name_1 }}.cachesize=10
+
+# Define Node2
+worker.{{ appWorker_name_2 }}.port=8009
+worker.{{ appWorker_name_2 }}.type=ajp13
+worker.{{ appWorker_name_2 }}.ping_mode=A
+worker.{{ appWorker_name_2 }}.host={{ appWorker_ip_2 }} 
+worker.{{ appWorker_name_2 }}.lbfactor=1
+worker.{{ appWorker_name_2 }}.cachesize=10
+
+# Load-balancing behaviour
+worker.loadbalancer.type=lb
+worker.loadbalancer.balance_workers={{ appWorker_name_1 }},{{ appWorker_name_2 }}
+worker.loadbalancer.sticky_session=1
+
