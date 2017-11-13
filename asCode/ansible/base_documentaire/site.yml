@@ -1,0 +1,9 @@
+---
+# This playbook deploys all components for 'base documentaire'
+
+
+- hosts: localhost
+  roles:
+    - geerlingguy.apache
+    - geerlingguy.php
+
