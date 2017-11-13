@@ -3,8 +3,7 @@
 
 
 - hosts: localhost
-
   roles:
-    - geerlingguy.drush
-    - geerlingguy.composer
-    - geerlingguy.drupal
+    - sonodar.oracle-jdk8
+    - sonodar.tomcat8
+

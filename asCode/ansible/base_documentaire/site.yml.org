@@ -38,3 +38,10 @@
     - geerlingguy.drush
     - geerlingguy.composer
     - geerlingguy.drupal
+
+- hosts: localhost
+  roles:
+    - sonodar.oracle-jdk8
+    - sonodar.tomcat8
+
+

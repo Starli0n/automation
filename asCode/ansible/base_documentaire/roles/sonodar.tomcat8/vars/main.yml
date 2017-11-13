@@ -1,0 +1,20 @@
+tomcat_version: 8.0.23
+
+http_port: 8080
+ajp_port: 8009
+
+ipv6_disable: True
+
+jmx_registry_port: 10080
+jmx_server_port: 10081
+
+admin_username: admin
+admin_password: admin
+
+min_heap_size: 512M
+max_heap_size: 512M
+metaspace_size: 128M
+max_metaspace_size: 128M
+
+gc_log_file: /opt/tomcat/logs/gc.log
+heap_dump_dir: /opt/tomcat/logs/
