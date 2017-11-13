@@ -3,6 +3,8 @@
 
 
 - hosts: localhost
-  roles:
-    - geerlingguy.mysql
 
+  roles:
+    - geerlingguy.drush
+    - geerlingguy.composer
+    - geerlingguy.drupal

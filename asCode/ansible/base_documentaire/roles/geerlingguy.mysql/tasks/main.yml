@@ -2,11 +2,6 @@
 # Variable configuration.
 - include: variables.yml
 
-# Setup/install pre task, mysqld not mariadb
-- include: pre-task.yml
-  when: ansible_os_family == 'RedHat'
-  static: no
-
 # Setup/install tasks.
 - include: setup-RedHat.yml
   when: ansible_os_family == 'RedHat'

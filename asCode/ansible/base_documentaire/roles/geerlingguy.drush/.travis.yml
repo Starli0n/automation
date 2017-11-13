@@ -2,8 +2,14 @@
 services: docker
 
 env:
+  # Normal installation.
   - distro: centos7
+    playbook: test.yml
   - distro: ubuntu1604
+    playbook: test.yml
+  # Install from source.
+  - distro: centos7
+    playbook: test-source-install.yml
 
 script:
   # Configure test script so we can run extra tests after playbook is run.
@@ -17,8 +23,8 @@ script:
   # Run tests.
   - ${PWD}/tests/test.sh
 
-  # Ensure PHP MySQL support is enabled.
-  - docker exec --tty ${container_id} env TERM=xterm php -i | grep 'mysqlnd => enabled'
+  # Test Drush.
+  - 'docker exec --tty ${container_id} env TERM=xterm drush --version || true'
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
