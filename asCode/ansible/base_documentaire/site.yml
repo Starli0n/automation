@@ -4,6 +4,5 @@
 
 - hosts: localhost
   roles:
-    - geerlingguy.apache
-    - geerlingguy.php
+    - geerlingguy.mysql
 
