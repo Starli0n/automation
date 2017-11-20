@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# by stef@dev2ops.eu
+# November 2017
+# setup the Base Documentaire infra
+#
+# param1 : project_name
+
+if [ "$#" -ne 1 ]; then
+ echo "Usage: $0 project_name"
+ exit 1
+fi
+
+project_name=$1
+
+wd=/root/devel/automation/asCode/aws/scripts
+ansible=/root/devel/automation/asCode/ansible/base_documentaire
+
+# unlock root to exec ansible
+$wd/utils/unlockRoot.sh $project_name 
+
+# exec  Base Documentaire ansible playbook to setup the application
+ansible-playbook $ansible/site.yml -i $ansible/hosts
+
+

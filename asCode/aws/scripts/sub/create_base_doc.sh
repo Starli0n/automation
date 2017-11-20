@@ -15,7 +15,7 @@ project_name=$1
 # create Base Documentaire VM(s) 
 
 tmpid=`aws ec2 run-instances \
---image-id ami-d9fae5bf \
+--image-id ami-236c7445 \
 --security-group-ids sg-c0e404b8 \
 --count 1 \
 --instance-type t2.micro \

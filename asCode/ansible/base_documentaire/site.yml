@@ -1,19 +1,19 @@
 ---
 # This playbook deploys all components for 'base documentaire'
 
-- hosts: localhost 
+- hosts: basedocServers 
 
   roles:
 # REDIS 3.2.16
     - geerlingguy.redis
 
-- hosts: localhost
+- hosts: basedocServers
   roles:
 # SOLR 4.x
     - geerlingguy.java
     - geerlingguy.solr
 
-- hosts: localhost
+- hosts: basedocServers
   pre_tasks:
     - name: Install the MySQL repo.
       yum:
@@ -37,15 +37,16 @@
     - geerlingguy.mysql
     - geerlingguy.php
 
+- hosts: basedocServers
+  roles:
+# Tomcat 8
+    - sonodar.oracle-jdk8
+    - sonodar.tomcat8
+
 # Drupal 7.56
     - geerlingguy.drush
     - geerlingguy.composer
     - geerlingguy.drupal
 
-- hosts: localhost
-  roles:
-# Tomcat 8
-    - sonodar.oracle-jdk8
-    - sonodar.tomcat8
 
 
